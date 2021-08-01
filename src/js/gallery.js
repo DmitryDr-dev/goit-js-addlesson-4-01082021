@@ -1,31 +1,30 @@
 import galleryItems from './gallery-items';
 import { refs } from './refs/refs';
-
-console.log(galleryItems);
-console.log(refs);
+import createGallery from '../templates/gallery-template.hbs'; //имопртируется функция а не разметка
 
 let activeIndex = null;
 
-const markUp = galleryItems.map(({ preview, original, description }) => {
-  return `<li class="gallery__item">
-  <a
-    class="gallery__link"
-    href="${original}"
-    data-source="${original}"
-  >
-    <img
-      class="gallery__image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-    />
-  </a>
-</li>`;
-});
+
+// const markUp = galleryItems.map(({ preview, original, description }) => {
+//   return `<li class="gallery__item">
+//   <a
+//     class="gallery__link"
+//     href="${original}"
+//     data-source="${original}"
+//   >
+//     <img
+//       class="gallery__image"
+//       src="${preview}"
+//       data-source="${original}"
+//       alt="${description}"
+//     />
+//   </a>
+// </li>`;
+// });
 
 // console.log(markUp);
 
-refs.galleryList.insertAdjacentHTML('beforeend', markUp.join(''));
+refs.galleryList.insertAdjacentHTML('beforeend', createGallery(galleryItems));
 
 refs.galleryList.addEventListener('click', handleOpenModal);
 refs.modal.addEventListener('click', handleCloseModal);
@@ -35,22 +34,25 @@ function handleOpenModal(e) {
   e.preventDefault();
 
   // if (e.target.nodeName !== 'IMG') {
-    if (e.target.classList.contains('gallery__image' || 'gallery__link' )) {
+  if (
+    !e.target.classList.contains('gallery__link') &&
+    !e.target.classList.contains('gallery__image')
+  ) {
     return;
   }
 
-  markUp.forEach((el, index) => {
-    if (el.includes(e.target.dataset.source)) {
+  galleryItems.forEach((el, index) => {
+    if (el.original === e.target.dataset.source) {
       activeIndex = index;
     }
   });
 
+  console.log(activeIndex);
   refs.modal.classList.add('is-open');
   refs.modalImg.src = e.target.dataset.source;
 
   // window.addEventListener('keydown',  () => keyboardManipulation(e, ));
   window.addEventListener('keydown', keyboardManipulation);
-
 }
 
 function handleCloseModal(e) {
@@ -102,7 +104,6 @@ function openByEnter(e) {
   // refs.modal.classList.add('is-open');
   // refs.modalImg.src = e.target.dataset.source;
 
-  handleOpenModal(e)
+  handleOpenModal(e);
   // window.addEventListener('keydown', keyboardManipulation);
-
 }
